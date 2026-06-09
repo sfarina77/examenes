@@ -1,0 +1,12 @@
+{
+  "EXAM101": {
+    "nombre": "Examen Milton Ochoa",
+    "url": "https://miltonochoa.com",
+    "pin_salida": "PR-2026"
+  },
+  "EXAM202": {
+    "nombre": "Evaluación MINED",
+    "url": "https://evaluaciones.edu.gob.sv/com.sote.portalalumno",
+    "pin_salida": "SV-2026"
+  }
+}
