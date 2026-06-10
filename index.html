@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Evaluación Seguro</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #0f172a; color: #f8fafc; height: 100vh; overflow: hidden; }
+        
+        /* PANTALLA 1: Selector de Examen */
+        .login-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100vh; padding: 20px; }
+        .login-card { text-align: center; max-width: 450px; }
+        .title { font-size: 24pt; font-weight: bold; margin-bottom: 8px; color: #f8fafc; }
+        .subtitle { font-size: 11pt; color: #94a3b8; margin-bottom: 30px; }
+        .code-input { font-size: 14pt; padding: 12px; border: 2px solid #334155; border-radius: 8px; background-color: #1e293b; color: white; width: 320px; text-align: center; outline: none; text-transform: uppercase; margin-bottom: 20px; }
+        .code-input:focus { border-color: #2563eb; }
+        .btn-start { background-color: #2563eb; color: white; font-size: 11pt; font-weight: bold; border: none; padding: 12px 35px; border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+        .btn-start:hover { background-color: #1d4ed8; }
+        .error-msg { color: #ef4444; font-size: 10pt; margin-top: 10px; font-weight: 500; min-height: 18px; }
+
+        /* PANTALLA 2: Entorno Quiosco Dividido (Oculto al inicio) */
+        .kiosk-screen { display: none; height: 100vh; width: 100vw; }
+        .exam-container { flex: 1; height: 100%; background-color: #1e1e1e; }
+        iframe { width: 100%; height: 100%; border: none; }
+        
+        /* Sidebar Derecho */
+        .sidebar { width: 340px; min-width: 340px; background-color: #111827; border-left: 1px solid #1f2937; display: flex; flex-direction: column; padding: 20px; }
+        .info-title { font-size: 13pt; font-weight: bold; color: #f8fafc; }
+        .info-status { font-size: 10pt; color: #94a3b8; margin-top: 4px; }
+        .divider { height: 1px; background-color: #1f2937; margin: 15px 0; }
+        
+        /* Calculadora */
+        .calc-title { font-size: 8pt; font-weight: bold; color: #94a3b8; letter-spacing: 1px; margin-bottom: 10px; }
+        .calc-display { width: 100%; background-color: #0f172a; color: #38bdf8; border: 1px solid #334155; border-radius: 6px; padding: 12px; font-size: 20px; text-align: right; font-family: monospace; margin-bottom: 10px; outline: none; }
+        .calc-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; }
+        .calc-grid button { background-color: #1e293b; color: white; border: 1px solid #334155; border-radius: 6px; padding: 12px 0; font-size: 13px; font-weight: bold; cursor: pointer; user-select: none; }
+        .calc-grid button:active { background-color: #334155; }
+        .calc-grid button.op { background-color: #334155; color: #38bdf8; }
+        .calc-grid button.eq { background-color: #0284c7; color: white; grid-row: span 2; height: 100%; }
+    </style>
+</head>
+<body>
+
+    <div id="loginView" class="login-screen">
+        <div class="login-card">
+            <div class="title">SISTEMA DE EVALUACIÓN SEGURO</div>
+            <div class="subtitle">Introduce el código de la prueba asignado por tu docente para validar el acceso.</div>
+            <input type="text" id="examCode" class="code-input" placeholder="CÓDIGO DEL EXAMEN" autocomplete="off">
+            <br>
+            <button class="btn-start" onclick="validarExamen()">Iniciar Evaluación</button>
+            <div id="errorLog" class="error-msg"></div>
+        </div>
+    </div>
+
+    <div id="kioskView" class="kiosk-screen">
+        <div class="exam-container">
+            <iframe id="examIframe" src=""></iframe>
+        </div>
+        <div class="sidebar">
+            <div id="examName" class="info-title">Evaluación</div>
+            <div class="info-status">🔒 Modo Quiosco Activo (ChromeOS)</div>
+            <div class="divider"></div>
+            
+            <div class="calc-title">CALCULADORA CIENTÍFICA</div>
+            <input type="text" class="calc-display" id="display" readonly value="">
+            
+            <div class="calc-grid">
+                <button class="op" onclick="press('Math.sin(')">sin</button>
+                <button class="op" onclick="press('Math.cos(')">cos</button>
+                <button class="op" onclick="press('Math.tan(')">tan</button>
+                <button class="op" onclick="press('Math.sqrt(')">√</button>
+                <button class="op" onclick="press('**')">^</button>
+                <button class="op" onclick="press('Math.log10(')">log</button>
+                <button class="op" onclick="press('Math.log(')">ln</button>
+                <button class="op" onclick="press('(')">(</button>
+                <button class="op" onclick="press(')')">)</button>
+                <button class="op" onclick="press('/')">/</button>
+                <button onclick="press('7')">7</button>
+                <button onclick="press('8')">8</button>
+                <button onclick="press('9')">9</button>
+                <button class="op" onclick="clearCalc()">C</button>
+                <button class="op" onclick="backspace()">DEL</button>
+                <button onclick="press('4')">4</button>
+                <button onclick="press('5')">5</button>
+                <button onclick="press('6')">6</button>
+                <button class="op" onclick="press('*')">*</button>
+                <button class="eq" onclick="calculate()">=</button>
+                <button onclick="press('1')">1</button>
+                <button onclick="press('2')">2</button>
+                <button onclick="press('3')">3</button>
+                <button class="op" onclick="press('-')">-</button>
+                <button onclick="press('0')">0</button>
+                <button onclick="press('.')">.</button>
+                <button onclick="press('Math.PI')">π</button>
+                <button class="op" onclick="press('+')">+</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // LÓGICA DE VALIDACIÓN CON TU JSON EN GITHUB
+        const JSON_URL = "https://raw.githubusercontent.com/sfarina77/examenes/main/examenes.json";
+
+        function validarExamen() {
+            const codigoInput = document.getElementById('examCode').value.trim().toUpperCase();
+            const errorLog = document.getElementById('errorLog');
+            
+            if(!codigoInput) return;
+            errorLog.innerText = "Verificando código...";
+
+            fetch(JSON_URL)
+                .then(response => {
+                    if (!response.ok) throw new Error("Error al conectar con el servidor.");
+                    return response.json();
+                })
+                .then(db => {
+                    if (codigoInput in db) {
+                        const datosExamen = db[codigoInput];
+                        
+                        // Configurar entorno e iframe
+                        document.getElementById('examName').innerText = `📝 ${datosExamen.nombre || 'Evaluación'}`;
+                        document.getElementById('examIframe').src = datosExamen.url;
+                        
+                        // Mutar de pantalla
+                        document.getElementById('loginView').style.display = 'none';
+                        document.getElementById('kioskView').style.display = 'flex';
+                    } else {
+                        errorLog.innerText = "❌ El código de examen no existe.";
+                    }
+                })
+                .catch(err => {
+                    errorLog.innerText = `❌ Error de red: No se pudo validar.`;
+                    console.error(err);
+                });
+        }
+
+        // Permitir inicio al presionar Enter
+        document.getElementById('examCode').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') validarExamen();
+        });
+
+        // LÓGICA DE LA CALCULADORA CIENTÍFICA
+        const display = document.getElementById('display');
+        let expression = "";
+
+        function press(val) {
+            expression += val;
+            let visual = expression
+                .replace(/Math\.sin\(/g, 'sin(').replace(/Math\.cos\(/g, 'cos(').replace(/Math\.tan\(/g, 'tan(')
+                .replace(/Math\.sqrt\(/g, '√(').replace(/Math\.log10\(/g, 'log(').replace(/Math\.log\(/g, 'ln(')
+                .replace(/Math\.PI/g, 'π').replace(/\*\*/g, '^');
+            display.value = visual;
+        }
+        function clearCalc() { expression = ""; display.value = ""; }
+        function backspace() { expression = expression.slice(0, -1); display.value = expression; }
+        function calculate() {
+            try {
+                let result = eval(expression);
+                if (result !== undefined) {
+                    display.value = Number(result.toFixed(6)).toString();
+                    expression = display.value;
+                }
+            } catch (e) { display.value = "Error"; expression = ""; }
+        }
+    </script>
+</body>
+</html>
