@@ -13,10 +13,5 @@
     "nombre": "EXAMEN PISA",
     "url": "https://oecddev.wheebox.com/slv",
     "pin_salida": "PISA01"
-  },
-  "TEST2026": {
-    "nombre": "PRUEBA Y VORRAR",
-    "url": "ecos-app.com",
-    "pin_salida": "1234"
   }
 }
