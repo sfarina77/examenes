@@ -5,8 +5,13 @@
     "pin_salida": "PR-2026"
   },
   "EXAM202": {
-    "nombre": "Evaluación MINED",
+    "nombre": "Evaluaci\u00f3n MINED",
     "url": "https://evaluaciones.edu.gob.sv/com.sote.portalalumno",
     "pin_salida": "SV-2026"
+  },
+  "PISA": {
+    "nombre": "EXAMEN PISA",
+    "url": "https://oecddev.wheebox.com/slv",
+    "pin_salida": "PISA01"
   }
 }
