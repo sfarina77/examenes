@@ -13,5 +13,10 @@
     "nombre": "EXAMEN PISA",
     "url": "https://oecddev.wheebox.com/slv",
     "pin_salida": "PISA01"
+  },
+  "EXAMMILTON": {
+    "nombre": "MILTON OCHOA",
+    "url": "https://thankful-mushroom-08846b80f.7.azurestaticapps.net/login",
+    "pin_salida": "MILTONSALE"
   }
 }
