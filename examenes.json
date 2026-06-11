@@ -18,5 +18,10 @@
     "nombre": "MILTON OCHOA",
     "url": "https://thankful-mushroom-08846b80f.7.azurestaticapps.net/login",
     "pin_salida": "MILTONSALE"
+  },
+  "EXAMEN1": {
+    "nombre": "Prueba CML",
+    "url": "https://evaluaciones.edu.gob.sv/",
+    "pin_salida": "1967"
   }
 }
